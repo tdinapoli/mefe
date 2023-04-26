@@ -40,7 +40,6 @@ def write_image_to_disk(img_data, p, img_dir='images/'):
 def write_image(img_data, p, img_path='images/'):
     img_path = write_image_to_disk(img_data, p, img_dir='images/')
     img_str = f'![{img_path.name}]({str(img_path.resolve())})'
-    print(img_str)
     return img_str
 
 def write_out(cell, f, p):
