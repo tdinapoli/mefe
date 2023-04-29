@@ -45,10 +45,12 @@ def write_image(img_data, p, img_path='images/'):
 def write_out(cell, f, p):
     for output in cell['outputs']:
         if output['output_type'] == 'stream':
-            print('\n```output:```',file=f)
-            print('```', file=f)
+            print('\n`output:`',file=f)
+            print('```python', file=f)
+            print("\"\"\"", file=f)
             for line in output['text']:
-                print(line, file=f, end='')
+                print(line, file=f)
+            print("\"\"\"", file=f)
             print('```', file=f)
         elif output['output_type'] == 'display_data':
             img_str = write_image(output['data']['image/png'], p)
@@ -61,11 +63,18 @@ def write_code(cell, f, p):
 def md_from_dict(json_dict, path, filename='README.md'):
     p = Path(path)
     with open(f"{str(p)}/{filename}", 'w') as f:
+        write_metadata(f)
         for cell in json_dict['cells']:
             if cell['cell_type'] == 'markdown':
                 write_markdown(cell, f)
             elif cell['cell_type'] == 'code':
                 write_code(cell, f, p)
+
+def write_metadata(f):
+    print("---", file=f)
+    print("geometry: margin=2cm", file=f)
+    print("---", file=f)
+
 
 if __name__ == '__main__':
     json_path = 'tps/tp1/tp1.ipynb'
