@@ -1,24 +1,27 @@
+---
+geometry: margin=2cm
+---
 
 # MEFE - TP computacional 1
 
-Este informe es la resolución del primer TP computacional de [MEFE](http://materias.df.uba.ar/meefea2023c1/), cuya consigna se puede ver [acá](http://materias.df.uba.ar/meefea2023c1/files/2023/04/Computacional1_MEFE2023.pdf). También tiene su versión en Jupyter Notebook
+#### Tomás Di Napoli
 
-
-
-[![Jupyter Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googlecolab/colabtools/blob/master/notebooks/colab-github-demo.ipynb)
-
-
-
-y su versión [web](https://tdinapoli.github.io).
+Este trabajo es la resolución del primer TP computacional de [MEFE](http://materias.df.uba.ar/meefea2023c1/), cuya consigna se puede ver [acá](http://materias.df.uba.ar/meefea2023c1/files/2023/04/Computacional1_MEFE2023.pdf). También tiene su versión en [Jupyter Notebook](https://colab.research.google.com/drive/1cy--G69O031nhcRVmJvtWlc4_ZoPo5qQ?usp=sharing) junto con otros ejercicios de la materia que estoy subiendo a [este](https://github.com/tdinapoli/mefe/) repositorio de github.
 
 **1)**
 
-Primero importo las librerías que voy a necesitar.
+Primero importo las librerías que voy a necesitar y defino algunos parámetros útiles para graficar.
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from scipy.stats import binom, hypergeom, poisson
 plt.style.use('seaborn-whitegrid')
+mpl.rcParams['figure.dpi'] = 200
+mpl.rcParams['legend.fontsize'] = 15
+mpl.rcParams['axes.labelsize'] = 15
+mpl.rcParams['xtick.labelsize'] = 10
+mpl.rcParams['ytick.labelsize'] = 10
 ```
 
 Defino una función ```bernoulli```, que toma ```n``` la cantidad de veces que "tiramos una moneda" y ```p``` la probabilidad de que salga cara (que lo represento con un 1). Opcionalmente toma ```size``` para que el resultado sea un array de experimentos de Bernoulli de la forma que yo quiera.
@@ -48,13 +51,20 @@ print(f"p(exito) \t= \t{exitos/n}")
 print(f"p(fracaso) \t= \t{fracasos/n}") 
 ```
 
-```output:```
-```
+`output:`
+```python
+"""
 p 	es 	0.02
+
 1-p 	es 	0.98
+
 en 1000000 experimentos,
-p(exito) 	= 	0.019879
-p(fracaso) 	= 	0.980121
+
+p(exito) 	= 	0.019928
+
+p(fracaso) 	= 	0.980072
+
+"""
 ```
 
 **2)**
@@ -95,6 +105,13 @@ freq_teo = np.array([rv.pmf(x) for x in range(fotones)])
 freq, bin_edges = np.histogram(experimentos,
                              bins=range(fotones+1),
                              density=True)
+# Grafico los errores
+bin_width = bin_edges[1] - bin_edges[0]
+bin_centers = bin_edges[:-1] + bin_width/2
+barras_error = np.sqrt(freq)/np.sqrt(len(experimentos))
+
+plt.errorbar(bin_centers, freq, yerr=barras_error,
+             fmt='.', markersize=3, linewidth=0.8, capsize=2)
 # Grafico
 plt.stairs(freq, bin_edges, fill=True, label="Experimental")
 plt.stairs(freq_teo, bin_edges, linewidth=2,label="Teórico")
@@ -103,7 +120,7 @@ plt.xlabel("Fotones detectados")
 plt.legend(loc="upper left")
 plt.show()
 ```
-![0.png](/home/tdinapoli/Documents/personales/facultad/mefe/git/tps/tp1/images/0.png)
+![Histograma de la probabilidad de detectar $k$ fotones dado que llegaron 15 al detector.](/home/dina/facultad/mefe/git/tps/tp1/images/0.png)
 
 **3)**
 
@@ -151,6 +168,14 @@ freq_teo = np.array([rv.pmf(x) for x in range(m)])
 freq, bin_edges = np.histogram(experimentos,
                              bins=range(m+1),
                              density=True)
+# Grafico los errores
+bin_width = bin_edges[1] - bin_edges[0]
+bin_centers = bin_edges[:-1] + bin_width/2
+barras_error = np.sqrt(freq)/np.sqrt(len(experimentos))
+
+plt.errorbar(bin_centers, freq, yerr=barras_error,
+             fmt='.', markersize=3, linewidth=0.8, capsize=2)
+
 plt.stairs(freq, bin_edges, fill=True, label="Experimental")
 plt.stairs(freq_teo, bin_edges, linewidth=2,label="Teórico")
 plt.xlim([0,40])
@@ -159,7 +184,7 @@ plt.ylabel("Probabilidad")
 plt.legend()
 plt.show()
 ```
-![1.png](/home/tdinapoli/Documents/personales/facultad/mefe/git/tps/tp1/images/1.png)
+![Histograma de la probabilidad de que se emitan $k$ fotones en un intervalo de un segundo dado que en promedio se emiten $I=15 s^{-1}$.](/home/dina/facultad/mefe/git/tps/tp1/images/1.png)
 
 **4)**
 
@@ -177,7 +202,7 @@ pero esas probabilidades ya las conocemos. La probabilidad de emitir $k$ fotones
 
 
 
-$$\begin{align*}P(\text{detectar}) &= \sum_{k=0, j\geq k}^{\infty} B(j \mid k, p) P(k \mid \mu) \\ &= \sum_{k=0, j\geq k}^{\infty} \frac{k!}{(k-j)!j!} p^j (1-p)^{k-j} \frac{e^{-\mu}\mu^k}{k!} \\ &= \frac{e^{-\mu}p^j \mu^j}{j!} \sum_{k=0, j\geq k}^{\infty} \frac{[(1-p)\mu]^{k-j}}{(k-j)!} \\ &= \frac{e^{-\mu}p^j \mu^j}{j!} e^{(1-p)\mu} \\ &= \frac{e^{-p\mu}(p\mu)^j}{j!}.\end{align*}$$
+$$\begin{aligned}P(\text{detectar}) &= \sum_{k=0, j\geq k}^{\infty} B(j \mid k, p) P(k \mid \mu) \\ &= \sum_{k=0, j\geq k}^{\infty} \frac{k!}{(k-j)!j!} p^j (1-p)^{k-j} \frac{e^{-\mu}\mu^k}{k!} \\ &= \frac{e^{-\mu}p^j \mu^j}{j!} \sum_{k=0, j\geq k}^{\infty} \frac{[(1-p)\mu]^{k-j}}{(k-j)!} \\ &= \frac{e^{-\mu}p^j \mu^j}{j!} e^{(1-p)\mu} \\ &= \frac{e^{-p\mu}(p\mu)^j}{j!}.\end{aligned}$$
 
 
 
@@ -189,9 +214,12 @@ Entonces, para ver si realmente es así, creo una ```rv``` Poisson con valor med
 ```python
 rv = poisson(eficiencia * Dt*I)
 
-# Para cada experimento de emisión de la fuente, hago un bernoulli con esa cantidad de fotones emitidos.
+# Para cada experimento de emisión de la fuente, 
+# hago un bernoulli con esa cantidad de fotones emitidos.
 # Eso simula la probabilidad de detectar los fotones emitidos.
-fotones_detectados = np.array([contar_exitos(bernoulli(fot_emit, eficiencia)) for fot_emit in experimentos])
+fotones_detectados = np.array(
+    [contar_exitos(bernoulli(fot_emit, eficiencia)) for fot_emit in experimentos]
+    )
 ```
 ```python
 # Creo los histogramas teóricos y generados
@@ -199,6 +227,13 @@ freq_teo = np.array([rv.pmf(x) for x in range(m)])
 freq, bin_edges = np.histogram(fotones_detectados,
                              bins=range(m+1),
                              density=True)
+# Grafico los errores
+bin_width = bin_edges[1] - bin_edges[0]
+bin_centers = bin_edges[:-1] + bin_width/2
+barras_error = np.sqrt(freq)/np.sqrt(len(fotones_detectados))
+
+plt.errorbar(bin_centers, freq, yerr=barras_error,
+             fmt='.', markersize=3, linewidth=0.8, capsize=2)
 # Grafico
 plt.stairs(freq, bin_edges, fill=True, label="Experimental")
 plt.stairs(freq_teo, bin_edges, linewidth=2,label="Teórico")
@@ -208,7 +243,7 @@ plt.ylabel("Probabilidad")
 plt.legend()
 plt.show()
 ```
-![2.png](/home/tdinapoli/Documents/personales/facultad/mefe/git/tps/tp1/images/2.png)
+![Histograma de la probabilidad de detectar fotones con un detector de eficiencia $\epsilon=0.75$ y una fuente que emite en promedio $I = 15 s^{-1}$.](/home/dina/facultad/mefe/git/tps/tp1/images/2.png)
 
 **5)**
 
@@ -233,19 +268,48 @@ experimentos_todo_junto = contar_exitos(fotones_detectados_todo_junto, axis=1)
 freq_todo_junto, bin_edges_todo_junto = np.histogram(experimentos_todo_junto,
                              bins=range(m+1),
                              density=True)
+# Grafico errores
+bin_width = bin_edges[1] - bin_edges[0]
+bin_centers = bin_edges[:-1] + bin_width/2
+barras_error_todo_junto = np.sqrt(freq_todo_junto)/np.sqrt(len(experimentos_todo_junto))
+barras_error = np.sqrt(freq)/np.sqrt(len(fotones_detectados))
+offset = 0.15 * bin_width * np.ones(len(bin_centers))
+
+plt.errorbar(bin_centers - offset, freq_todo_junto, yerr=barras_error_todo_junto,
+             color='C2', fmt='.', markersize=3, linewidth=0.8, capsize=2)
+plt.errorbar(bin_centers + offset, freq, yerr=barras_error, color='C0',
+             fmt='.', markersize=3, linewidth=0.8, capsize=2)
 
 # Grafico reutilizando las frecuencias teóricas que calculé antes, pues son las mismas
 plt.stairs(freq, bin_edges, fill=True, label="Experimental", alpha=0.5)
 plt.stairs(freq_teo, bin_edges, linewidth=2,label="Teórico")
 plt.stairs(freq_todo_junto, bin_edges, fill=True,label="Todo junto", alpha=0.5)
 plt.xlim([0,40])
+plt.xlabel("Fotones detectados")
+plt.ylabel("Probabilidad")
 plt.legend()
 plt.show()
 ```
-![3.png](/home/tdinapoli/Documents/personales/facultad/mefe/git/tps/tp1/images/3.png)
-```python
+![Histogramas de la probabilidad de detectar fotones con un detector de eficiencia $\epsilon=0.75$ y una fuente que emite en promedio $I = 15 s^{-1}$, simulándolo como eventos separados y como un solo evento.](/home/dina/facultad/mefe/git/tps/tp1/images/3.png)
 
-```
-```python
+**6)**
 
-```
+
+
+Tengo $N$ mediciones en total y $k$ bins en el histograma. La mejor forma de estimar la probabilidad dadas mis mediciones es decir que la probabilidad de que suceda $k$, es decir la probabilidad de que una de las $N$ mediciones caiga en el bin $k$, es $P_k = \frac{N_k}{N}$. Luego, podría decir que cada medición tiene un resultado binario: o está en el bin $k$ o no. Como además mis mediciones son independientes, puedo pensar que el número de mediciones en un dado bin $k$ sigue una distribución binomial
+
+
+
+$$P(N_k \mid N, P_k) = {N \choose N_k} P_k^{N_k} (1 - P_k)^{N - N_k},$$
+
+
+
+y por lo tanto la dispersión de la cantidad de mediciones en un histograma está dado por la dispersión de la binomial que escribí arriba, que depende de la cantidad de mediciones que tenga en cada bin. Entonces la barra de error que le asignaría a cada bin es $\sqrt{NP_k(1-P_k)} = \sqrt{N \frac{N_k}{N}(1 - \frac{N_k}{N})} \approx \sqrt{N_k}$. Esta forma de estimar la incertidumbre sobre la cantidad de datos en un bin tiene el problema de que le asigna incertidumbre nula a los bins en los que no cayó ninguna medición, ya que en ellos $P_k=0$.
+
+
+
+Para no volver a graficar todo le agregué los errores a los histogramas mientras los iba haciendo.
+
+
+
+Una observación interesante: si cuento la cantidad de barras de error que incluyen a la probabilidad teórica y divido por la cantidad de barras de error totales la cuenta da alrededor de 0.7, parecido al porcentaje de casos que abarca un intervalo de $2\sigma$ centrado en el valor medio de una distribución gaussiana.
