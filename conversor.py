@@ -77,7 +77,7 @@ def write_metadata(f):
 
 
 if __name__ == '__main__':
-    json_path = 'tps/tp1/tp1.ipynb'
+    json_path = 'tps/tp2/tp2-limpio.ipynb'
     data = dict_from_json(json_path)
-    md_path = 'tps/tp1/'
+    md_path = 'tps/tp2/'
     md_from_dict(data, md_path)
