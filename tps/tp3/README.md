@@ -22,7 +22,7 @@ mpl.rcParams['xtick.labelsize'] = 10
 mpl.rcParams['ytick.labelsize'] = 10
 ```
 
-# Introducción
+## Introducción
 
 
 
@@ -66,7 +66,7 @@ Bueno, me callo y arranco con los problemas.
 
 
 
-# Ganando intuición
+## Ganando intuición
 
 #### Problemas 1 y 2
 
@@ -117,8 +117,8 @@ def plot():
 plot()
 plt.show()
 ```
-![Histrogama](/home/dina/facultad/mefe/git/tps/tp3/images/27.png)
-\ 
+![0.png](/home/dina/facultad/mefe/git/tps/tp3/images/0.png)
+\
 
 Al ser exponenciales, quizás es mejor visualizar esto con escala logarítmica en el eje y. Repito todo pero pongo plt.yscale("log") al final.
 ```python
@@ -126,12 +126,12 @@ plot()
 plt.yscale("log")
 plt.show()
 ```
-![28.png](/home/dina/facultad/mefe/git/tps/tp3/images/28.png)
-\ 
+![1.png](/home/dina/facultad/mefe/git/tps/tp3/images/1.png)
+\
 
 Está bueno notar que al ser exponencial decreciente, la PDF correspondiente a la hipótesis nula es una lineal con pendiente $-\lambda$. Por esto me surgió la siguiente duda que no voy a responder en este TP, pero que la digo igual porque me pareció interesante: si la hipótesis alternativa $H_1$ fuera $\alpha_0 \neq 1$, ¿podríamos hacer un test que diferencie estas hipótesis a partir de un test de linealidad sobre las alturas del histograma de la muestra?. ¿Cómo depende ese test del ancho de los bins?.
 
-# El estadístico y el test
+## El estadístico y el test
 
 #### Problemas 3 y 4
 
@@ -209,9 +209,9 @@ Luego, genero cienmil realizaciones de mi estadístico usando los parámetros de
 ```python
 N = 100000
 # Caso en el que H0 es cierta (los datos provienen de weibull con alpha = 1)
-t_h0 = [estadistico(wbc.rvs(size=100), lmbd, 1, 0.8) for _ in range(N)]
+t_h0 = [estadistico(wbc.rvs(size=100), lmbd, alpha0, alpha1) for _ in range(N)]
 # Caso en el que H1 es cierta (los datos provienen de weibull con alpha = 0.8)
-t_h1 = [estadistico(wbd.rvs(size=100), lmbd, 1, 0.8) for _ in range(N)]
+t_h1 = [estadistico(wbd.rvs(size=100), lmbd, alpha0, alpha1) for _ in range(N)]
 ```
 
 Estas dos variables aleatorias tienen distribución normal pero con distintos valores medios y varianzas, que las puedo calcular a partir de los datos que generé recién. También puedo calcular sus errores que deben ser chicos porque simulé muchos datos
@@ -229,11 +229,11 @@ print(f"N(mu={mu1:.3f}±{(mu1/np.sqrt(N)):.3f}, sigma^2={var1:.6f}±{var1*np.sqr
 """
 Cuando H0 es cierta t es
 
-N(mu=-0.496±-0.002, sigma^2=0.000591±0.000003)
+N(mu=-0.496±-0.002, sigma^2=0.000593±0.000003)
 
 Cuando H1 es cierta t es
 
-N(mu=-0.403±-0.001, sigma^2=0.001584±0.000007)
+N(mu=-0.403±-0.001, sigma^2=0.001596±0.000007)
 
 """
 ```
@@ -262,8 +262,8 @@ plt.ylabel("Probabilidad")
 plt.xlabel("$t$")
 plt.show()
 ```
-![29.png](/home/dina/facultad/mefe/git/tps/tp3/images/29.png)
-\ 
+![2.png](/home/dina/facultad/mefe/git/tps/tp3/images/2.png)
+\
 
 Bueno, es casi cierto. Todavía se puede ver una asimetría que proviene de la distribución original de las variables. Esto sería cada vez menos notorio en cuanto aumente el número de datos en las muestras.
 
@@ -357,12 +357,10 @@ plot_test()
 plt.legend()
 plt.show()
 ```
-![Gráfico del test](/home/dina/facultad/mefe/git/tps/tp3/images/30.png)
-\ 
+![3.png](/home/dina/facultad/mefe/git/tps/tp3/images/3.png)
+\
 
-Como venía diciendo, en el gráfico aparecen las PDF de $t$ tanto cuando $H_0$ es cierta (azul) como cuando $H_1$ lo es (verde). Las áreas coloreadas representan el error de tipo 1 (azul), el error de tipo 2 (verde), la potencia (amarillo) y también está graficado el valor crítico $t_c$ del estadístico tal que la significancia sea $\alpha = 0.05$.
-
-# Una resumida comparación
+## Una resumida comparación
 
 
 
@@ -396,8 +394,8 @@ plt.ylabel("Probabilidad")
 plt.xlabel("$t$")
 plt.show()
 ```
-![31.png](/home/dina/facultad/mefe/git/tps/tp3/images/31.png)
-\ 
+![4.png](/home/dina/facultad/mefe/git/tps/tp3/images/4.png)
+\
 
 Se ve claramente que este estadístico es mucho peor!
 
@@ -407,7 +405,7 @@ Como se solapan tanto las distribuciones, si fuera a hacer un test de hipótesis
 
 
 
-# Probando distintas significancias
+## Probando distintas significancias
 
 #### Problema 5
 
@@ -440,17 +438,78 @@ plt.plot(alphas, alphas, linewidth=2,
          label="Error de tipo 1")
 
 plt.legend()
-plt.xlabel("alpha")
+plt.xlabel(r"$\alpha$")
 plt.show()
 ```
-![32.png](/home/dina/facultad/mefe/git/tps/tp3/images/32.png)
-\ 
+![5.png](/home/dina/facultad/mefe/git/tps/tp3/images/5.png)
+\
 
 Como la potencia crece muy rápido para los valores cercanos a $\alpha = 0$ se puede concluir que el test es bueno, ya que lo que se busca en un test de hipótesis es tener la mayor potencia para el menor $\alpha$ o error de tipo 1 posible.
 
 
 
-# p-valor
+#### Ahora el verdadero problema 5
+
+
+
+Bueno, interpreté mal el enunciado la primera vez que entregué el TP. El $\alpha$ que tenía que variar era el de la hipótesis alternativa y no la significancia del test.
+
+
+
+Entonces, para hacer esto primero genero muchas veces datos del estadístico que propuse pero ahora a partir de distribuciones de *Weibull* con distintos $\alpha$ de parámetro. Luego, de cada conjunto de esos estadísticos calculo el valor medio $\mu$ y su varianza $\sigma^2$, y aproximo a cada distribución del estadístico para un dado $\alpha$ como una variable aleatoria $N(\mu, \sigma^2)$. Luego calculo el $t_c$ crítico del test, y a partir de él calculo la potencia haciendo la integral de la normal hacia el lado correspondiente. Por la dependencia que tiene con los $\alpha_i$ el estadístico que propuse la distribución de $H_1$ siempre queda a la derecha de la de $H_0$, por lo tanto el test siempre es a cola derecha, sin importar si $\alpha_1 > \alpha_0$ o $\alpha_1 < \alpha_0$
+```python
+# Primero genero el vector de parámetros
+alphas_param = np.linspace(0.6, 1.4, 10)
+
+# Lista para guardar las potencias de cada test
+potencias = []
+
+# Para cada alpha repito
+for alpha in alphas_param:
+    
+    # Genero diezmil repeticiones del estadístico
+    wb_i = ss.weibull_min(alpha, scale=1/lmbd, loc=0)
+    t_i = [estadistico(wb_i.rvs(size=100), lmbd, alpha0, alpha) for _ in range(10000)]
+    t0_i = [estadistico(wbc.rvs(size=100), lmbd, alpha0, alpha) for _ in range(10000)]
+
+    # Calculo su valor medio y varianza
+    mu, var = np.mean(t_i), np.var(t_i)
+    mu0_i, var0_i = np.mean(t0_i), np.var(t0_i)
+    
+    # Defino la normal que describe f(t | H1) y f(t | H0)
+    n_i = ss.norm(loc=mu, scale=np.sqrt(var))
+    n0_i = ss.norm(loc=mu0_i, scale=np.sqrt(var0_i))
+    
+    # Calculo el tc igual que lo hice antes (cola derecha)
+    tc_i = n0_i.ppf(0.95)
+    
+    # Calculo la potencia
+    pot = 1 - n_i.cdf(tc_i)
+    potencias.append(pot)
+
+    # Este código comentado sirve para graficar los histogramas de cada test
+    
+    #freq, bin_edges = np.histogram(t0_i, density=True)
+    #plt.stairs(freq, bin_edges, fill=True, alpha=0.5, color="C0", label="$t_{H_0}$")
+    #freq, bin_edges = np.histogram(t_i, density=True)
+    #plt.stairs(freq, bin_edges, fill=True, alpha=0.5, color="C1", label="$t_{H_1}$")
+    #plt.axvline(tc_i)
+    #plt.show()
+        
+```
+
+Ahora que ya tengo las potencias para cada alpha hago un gráfico para ver cómo queda. La intuición me dice que mientras más cercano a 1 sea el $\alpha$ menos potencia tendrá el test, pues las distribuciones de $t$ correspondientes a $H_0$ y $H_1$ se parecen más. Para valores alejados la potencia debería ser cada vez más chica.
+```python
+# Grafico
+plt.plot(alphas_param, potencias, 'o')
+plt.xlabel(r"$\alpha_1$")
+plt.ylabel("Potencia")
+plt.show()
+```
+![6.png](/home/dina/facultad/mefe/git/tps/tp3/images/6.png)
+\
+
+## p-valor
 
 #### Problemas 6 y 7
 
@@ -490,8 +549,8 @@ plt.fill_between(ts_pval, 0, n0.pdf(ts_pval), alpha=0.5,
 plt.legend()
 plt.show()
 ```
-![33.png](/home/dina/facultad/mefe/git/tps/tp3/images/33.png)
-\ 
+![7.png](/home/dina/facultad/mefe/git/tps/tp3/images/7.png)
+\
 
 Calculo la máxima significancia
 ```python
@@ -502,7 +561,7 @@ print(f"La máxima/mínima significancia es alpha = {max_alpha:.3f}")
 `output:`
 ```python
 """
-La máxima/mínima significancia es alpha = 0.025
+La máxima/mínima significancia es alpha = 0.457
 
 """
 ```
@@ -523,8 +582,8 @@ plt.stairs(freq, bin_edges, fill=True, alpha=0.5, label="$alpha = 0.9$")
 plt.legend()
 plt.show()
 ```
-![34.png](/home/dina/facultad/mefe/git/tps/tp3/images/34.png)
-\ 
+![8.png](/home/dina/facultad/mefe/git/tps/tp3/images/8.png)
+\
 
 A partir de todos esos estadísticos puedo calcular los p-values correspondientes igual que antes. También genero una lista de p-values similar pero para los cuales la hipótesis nula es cierta.
 ```python
@@ -556,8 +615,8 @@ plt.xlabel("p-value")
 plt.ylabel("Probabilidad")
 plt.show()
 ```
-![35.png](/home/dina/facultad/mefe/git/tps/tp3/images/35.png)
-\ 
+![9.png](/home/dina/facultad/mefe/git/tps/tp3/images/9.png)
+\
 
 Lo que esperaba ver si la hipótesis nula fuera cierta es lo que se ve en el histograma verde: una distribución uniforme. Sin embargo se ve una distribución que decrece conforme el p-value aumenta.
 
